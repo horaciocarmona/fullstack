@@ -9,20 +9,19 @@ const routerProd = Router();
 //     routerProd.get("/:id", getProduct);
 // })
 
-routerProd.get("/:id",passportError('current'),authorization('User'),getProduct);
+routerProd.get("/:id",passportError('current'),authorization(['user','admin','premium']),getProduct);
 
 
 //EndPoint borra producto por id ruta\product
-routerProd.delete("/:id",passportError('current'),authorization('Admin'), deleteProduct);
+routerProd.delete("/:id",passportError('current'),authorization(['admin','premium']), deleteProduct);
 
 //EndPoint todos los productos ruta\product ad product
-routerProd.get("/",passportError('current'),authorization('User'), getProducts) 
-
+routerProd.get("/",passportError('current'),authorization(['user','admin','premium']), getProducts) 
 
 //EndPoint Dar de alta un producto ruta\product por id
-routerProd.post("/",passportError('current'),authorization('Admin'), addProducts)
+routerProd.post("/",passportError('current'),authorization(['admin','premium']), addProducts)
 
 //EndPoint Modificar un producto ruta\product por id
-routerProd.put("/:id",passportError('current'),authorization('Admin'), updateProduct)
+routerProd.put("/:id",passportError('current'),authorization(['admin']), updateProduct)
 
 export default routerProd;

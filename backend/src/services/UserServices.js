@@ -1,4 +1,5 @@
 import userModel from "../models/MongoDB/UserModel.js";
+import mongoose from "mongoose";
 
 export const findUsers = async () => {
     try {
@@ -35,6 +36,20 @@ export const createUser = async (user) => {
         const newUser = new userModel(user)
         await newUser.save()
         return newUser
+    } catch (error) {
+        return error
+    }
+
+}
+
+
+export const updateUserById = async (id,info) => {
+    try {
+        const mensaje = await userModel.findByIdAndUpdate(
+            new mongoose.Types.ObjectId(id),
+            info
+        );
+        return mensaje
     } catch (error) {
         return error
     }

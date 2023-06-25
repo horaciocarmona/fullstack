@@ -66,19 +66,24 @@ export const getProduct = async (req, res) => {
 }
 
 export const addProducts = async (req, res,next) => {
-    const { title, description, code, price, status, stock, category } = req.body
+    const { title, description, code, price, status, stock, category} = req.body
+    let owner=req.user.rol
 
+    if (req.user.rol=="premium") {
+         owner=req.user.email
+    }
+    //    console.log("owner",req.user)
     try {
         if (!title || !description || !code || !price || !status || !stock || !category )  {
             CustomError.createError({
             name:"Product add error",
-            cause: generateProductAddErrorInfo({ title, description, code, price, status, stock, category }),
+            cause: generateProductAddErrorInfo({ title, description, code, price, status, stock, category}),
             message:"Error creation Product",
             code:EErrors.INVALID_TYPES_ERROR
           })
         }
 
-        const product = await insertProducts([{ title, description, code, price, status, stock, category }])
+        const product = await insertProducts([{ title, description, code, price, status, stock, category, owner }])
         if (product instanceof Error){
             return res.status(200).json({
                 message: "Error en creacion de Producto"
@@ -111,7 +116,16 @@ export const updateProduct = async (req, res,next) => {
             code:EErrors.INVALID_TYPES_ERROR
           })
         }
+        if (req.user.rol=="premium") {
+            const productSel = await findProductById(req.params.id)
+            if (productSel && productSel.owner==req.user.email) {
 
+            } else {
+                return res.status(200).json({
+                    message: "No tiene permisos para anular este producto o no existe el producto "
+                })
+            }
+        }    
         const product = await updateProductById(id, { title: title, description: description, code: code, price: price, status: status, stock: stock, category: category, thumpbnail: thumpbnail })
 
         if (product instanceof Error){
@@ -143,6 +157,15 @@ export const updateProduct = async (req, res,next) => {
 export const deleteProduct = async (req, res) => {
     try {
         console.log('delete product',req.params.id)
+        if (req.user.rol=="premium") {
+            const productSel = await findProductById(req.params.id)
+            if (productSel && productSel.owner==req.user.email) {
+            } else {
+                return res.status(200).json({
+                    message: "No tiene permisos para anular este producto o no existe el producto "
+                })
+            }
+        }    
         const product = await deleteProductById(req.params.id)
         console.log(product instanceof Error)    
         if (product instanceof Error){

@@ -6,6 +6,7 @@ import routerUser from "./user.router.js";
 import routerGithub from "./github.router.js";
 import routerSocket from './socket.router.js';
 import routerMockingProducts from './mockingproducts.router.js';
+import routerPassword from './password.router.js';
 
 const router=Router()
 
@@ -17,6 +18,8 @@ router.use("/api/session",routerSession)
 router.use("/api/users",routerUser)
 router.use("/session",routerGithub)
 router.use("/api/mockingProducts",routerMockingProducts)
+router.use("/api/password",routerPassword)
+
 // router.use("/*",(req,res)=>{
 //      res.status(404).send({error:"404 ruta equivocada"})
 //  })

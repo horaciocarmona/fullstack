@@ -96,7 +96,7 @@ export const product = (req, res, next) => {
 };
 
 export const registerUser = async (req, res, next) => {
-  const { first_name, last_name, email, age, password } = req.body;
+  const { first_name, last_name, email, age, password, rol } = req.body;
   try {
     if (!first_name || !last_name || !email || !age || !password) {
       req.logger.error(`No se puede crear el usuario por falta de algun dato pedido (first_name, last_name, email, age, password)`);
@@ -127,6 +127,7 @@ export const registerUser = async (req, res, next) => {
         email,
         age,
         password: hashPassword,
+        rol:rol,
       });
       const token = jwt.sign(
         { user: { id: newUser._id } },

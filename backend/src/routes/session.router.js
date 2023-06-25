@@ -20,7 +20,7 @@ routerSession.get('/product',passport.authenticate('current',{session:false}), p
 routerSession.get('/testJWT',passport.authenticate('current',{session:false},(req,res)=>{
     res.send(req)
 }))
-routerSession.get('/current',passportError('current'),authorization('User'),(req,res)=>{
+routerSession.get('/current',passportError('current'),authorization(['user']),(req,res)=>{
     res.send(req.user.user)   
 })
 

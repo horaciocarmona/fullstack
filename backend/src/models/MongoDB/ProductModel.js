@@ -13,9 +13,12 @@ const productSchema = new Schema({
         index:true,
         require:true,
         enum:['grande','mediano','chico'],
-        default:'mediano'}
-    }
-    )
+        default:'mediano'},
+    owner:{type:String,
+        index:true,
+        require:true,
+        default:'admin'}
+    })
 
     productSchema.plugin(paginate)
     const productModel = model("products", productSchema)

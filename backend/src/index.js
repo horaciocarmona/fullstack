@@ -1,6 +1,5 @@
 import "dotenv/config";
 import { addLogger } from './utils/logger.js'
-
 import { faker } from '@faker-js/faker';
 import compression from "express-compression"
 import nodemailer from 'nodemailer'

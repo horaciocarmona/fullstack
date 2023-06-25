@@ -7,7 +7,7 @@ import { faker } from '@faker-js/faker';
       return categorias[indiceAleatorio];
     }
 
-
+ 
     // Generar código de producto
      const generarCodigoProducto = () => {
         // Generar un número aleatorio de 4 dígitos
@@ -22,7 +22,6 @@ import { faker } from '@faker-js/faker';
 
     const createRandomProducts = () => {
         return {
-
             title:faker.commerce.productName(),
             description:faker.commerce.productDescription(),
             price:parseFloat(faker.commerce.price()),
@@ -31,6 +30,7 @@ import { faker } from '@faker-js/faker';
             stock:getRandomNumber(0,200),
             status:true,
             category:obtenerCategoriaAleatoria(),
+            owner:"admin"
         };
     }
     export const findProducts=async ()=> {
