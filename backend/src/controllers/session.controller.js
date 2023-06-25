@@ -121,13 +121,14 @@ export const registerUser = async (req, res, next) => {
       res.status(401).send("Usuario ya registrado");
     } else {
       const hashPassword = createHash(password);
+      console.log("rol",rol)
       const newUser = await createUser({
         first_name,
         last_name,
         email,
         age,
         password: hashPassword,
-        rol:rol,
+        rol,
       });
       const token = jwt.sign(
         { user: { id: newUser._id } },

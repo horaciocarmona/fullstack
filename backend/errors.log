@@ -14,3 +14,5 @@ error: No se puede logear el usuario por User logged error: Error login user
 error: No se puede logear el usuario por User logged error: Error login user
 error: No se puede logear el usuario por User logged error: Error login user
 error: No se puede resetear la clave por ReferenceError: passwordData is not defined
+error: No se puede crear el usuario por falta de algun dato pedido (first_name, last_name, email, age, password)
+error: No se puede registrar el usuario por User created error: Error trying to create user
