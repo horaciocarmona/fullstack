@@ -39,6 +39,11 @@ function NavBar(){
                     nombre="Login"
                 />
             </Link>
+            <Link to={"/resetpassword"} >
+                {/* <CategoryButton
+                    nombre="Login"
+                /> */}
+            </Link>
 
 
         </div>

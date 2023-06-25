@@ -6,6 +6,7 @@ import { BrowserRouter,Routes,Route } from "react-router-dom";
 import CartProvider from "../../context/cartContext";
 import {Register} from "../../components/register/register.js"
 import {Login} from "../../components/login/login.js"
+import {ResetPassword} from "../../components/resetpassword/resetpassword.js"
 
 
 const Router=()=>{
@@ -22,6 +23,7 @@ const Router=()=>{
                 <Route path="/cart/:cart" element={<ItemCartContainer/>}></Route>
                 <Route path="/register" element={<Register/>}></Route>
                 <Route path="/login" element={<Login/>}></Route>
+                <Route path="/resetpassword/:token" element={<ResetPassword/>}></Route>
 
                </Routes>
                </CartProvider> 
