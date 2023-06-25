@@ -1,5 +1,8 @@
 import { useRef } from "react"
+import { useState } from "react"
+
 export const Register = () => {
+    const [mensaje, setMensaje] = useState('')
 
     const datForm = useRef() //Crear una referencia para consultar los valoresa actuales del form
 
@@ -21,8 +24,12 @@ export const Register = () => {
                 // duracion de 1 dia
                 document.cookie = `token=${data.token};expires=${new Date(Date.now() + 1 * 24 * 60 * 60 * 1000).toUTCString()};path=/`
                  console.log(data.token)
-             })
-             .catch(error => console.error(error))
+                 if (data.token){
+                    setMensaje("se registro correctamente")
+                 }
+
+                })
+             .catch(error => setMensaje(`Error en registracion ${error}`))
         console.log(cliente)
         e.target.reset() //Reset form
     }
@@ -50,8 +57,10 @@ export const Register = () => {
                     <label htmlFor="password" className="form-label">Contraseña</label>
                     <input type="password" className="form-control" name="password" />
                 </div>
-
                 <button type="submit" className="btn btn-primary">Registrar</button>
+                <p>----------------------------------------------</p>    
+                <p>Mensaje de respuesta: {mensaje}</p>
+
             </form>
         </div>
     )
