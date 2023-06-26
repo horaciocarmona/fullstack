@@ -1,0 +1,11 @@
+paths:
+  /api/users/:
+    get:
+      summary: "consultar por todos los usuarios" 
+      tags:
+        - Users
+      responses:
+        "200":
+          description: "usuarios obtenidos"
+        "500":
+          description: "error del servidor al obtener los usuarios"

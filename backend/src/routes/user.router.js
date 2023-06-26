@@ -4,7 +4,7 @@ import { passportError, authorization } from "../utils/messageErrors.js";
 
 const routerUsers = Router()
 
-routerUsers.get('/', passportError('current'),authorization(['Admin']),getUsers)
+routerUsers.get('/', passportError('current'),authorization(['admin']),getUsers)
 
 export default routerUsers
 

@@ -1,4 +1,6 @@
 import "dotenv/config";
+import swaggerJSDoc from 'swagger-jsdoc'
+import swaggerUIExpress from 'swagger-ui-express'
 import { addLogger } from './utils/logger.js'
 import { faker } from '@faker-js/faker';
 import compression from "express-compression"
@@ -31,6 +33,20 @@ import initializePassport from './config/passport.js'
 // import initializePassport from "./config/passport.js";
 import { passportError, authorization } from "./utils/messageErrors.js";
 import cors from 'cors'
+
+const swageerOptions={
+      definition:{
+         openapi:'3.1.0',
+         info:{
+            title:"documentacion de la aplicacion bartender",
+            description:"Ecomerce de bebidas"
+         }
+      },
+      apis:[`${__dirname}/docs/**/*.yaml`]
+}
+console.log(`${__dirname}/docs/**/*.yaml`)
+const specs=swaggerJSDoc(swageerOptions)
+
 const whiteList=['http://localhost:3000'] //rutas validas a mi servidor
 const corsOptions={
     origin:(origin,callback)=>{
@@ -84,6 +100,7 @@ switch (parseInt(process.env.SELECTEDBDD)) {
   
 
 //Midlewares
+app.use(`/apidocs`,swaggerUIExpress.serve, swaggerUIExpress.setup(specs))
 app.use(addLogger) //uso de logger
 app.use(compression({brotli:{enabled:true,zlib:{}}})) //para comprimir archivos 
 app.use(cors(corsOptions))
