@@ -142,6 +142,7 @@ export const registerUser = async (req, res, next) => {
       );
 
       res.cookie("jwt", token, { httpOnly: true });
+
       res.status(201).json({ token });
     }
   } catch (error) {
@@ -207,6 +208,7 @@ export const loginUser = async (req, res, next) => {
                 expiresIn: "12h",
               }
             );
+//            const expiration = new Date(Date.now() + 1 * 24 * 60 * 60 * 1000).toUTCString(); // 1 hora en milisegundos
             res.cookie("jwt", token, { httpOnly: true });
             return res.status(200).json({ token });
           }
@@ -226,7 +228,7 @@ export const loginUser = async (req, res, next) => {
                 req.logger.info(
                   `El usuario ${userBDD.first_name} ha iniciado sesión correctamente.`
                 );
-                res.cookie("jwt", token, { httpOnly: true });
+                res.cookie("jwt", token, {httpOnly: true });
                 req.user = user;
                 next();
               }

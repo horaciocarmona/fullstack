@@ -8,7 +8,7 @@ const routerProd = Router();
 // routerSession.get('/current',passportError('current'),authorization('User'),(req,res)=>{
 //     routerProd.get("/:id", getProduct);
 // })
-
+//EndPoint para traer un producto por id ruta\product
 routerProd.get("/:id",passportError('current'),authorization(['user','admin','premium']),getProduct);
 
 
@@ -18,7 +18,7 @@ routerProd.delete("/:id",passportError('current'),authorization(['admin','premiu
 //EndPoint todos los productos ruta\product ad product
 routerProd.get("/",passportError('current'),authorization(['user','admin','premium']), getProducts) 
 
-//EndPoint Dar de alta un producto ruta\product por id
+//EndPoint Dar de alta uno o varios productos ruta\product 
 routerProd.post("/",passportError('current'),authorization(['admin','premium']), addProducts)
 
 //EndPoint Modificar un producto ruta\product por id

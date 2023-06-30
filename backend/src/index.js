@@ -34,19 +34,19 @@ import initializePassport from './config/passport.js'
 import { passportError, authorization } from "./utils/messageErrors.js";
 import cors from 'cors'
 
-const swageerOptions={
+const swaggerOptions={
       definition:{
          openapi:'3.1.0',
          info:{
             title:"documentacion de la aplicacion bartender",
             description:"Ecomerce de bebidas"
-         }
+         },
+
       },
       apis:[`${__dirname}/docs/**/*.yaml`]
-}
-console.log(`${__dirname}/docs/**/*.yaml`)
-const specs=swaggerJSDoc(swageerOptions)
+    }
 
+    const specs=swaggerJSDoc(swaggerOptions)
 const whiteList=['http://localhost:3000'] //rutas validas a mi servidor
 const corsOptions={
     origin:(origin,callback)=>{
@@ -100,7 +100,19 @@ switch (parseInt(process.env.SELECTEDBDD)) {
   
 
 //Midlewares
-app.use(`/apidocs`,swaggerUIExpress.serve, swaggerUIExpress.setup(specs))
+// app.use(`/apidocs`,swaggerUIExpress.serve,
+// swaggerUIExpress.setup(specs, {
+//   explorer: true,
+//   swaggerOptions: {
+//     requestInterceptor: (request) => {
+//       request.headers["Authorization"] = `Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2VyIjp7ImlkIjoiNjQ0NWM2ZjhjYWRkNDk5MDk3NTMwN2VlIn0sImlhdCI6MTY4Nzg3MDE4NywiZXhwIjoxNjg3OTEzMzg3fQ.df1Vnzxalm4bL1_rxCXNTnm1XyQzl-YI1fVg1yA8AO4`;
+//       return request;
+//     },
+//   },
+// })
+// )
+
+
 app.use(addLogger) //uso de logger
 app.use(compression({brotli:{enabled:true,zlib:{}}})) //para comprimir archivos 
 app.use(cors(corsOptions))
@@ -128,6 +140,25 @@ initializePassport();
 app.use(passport.initialize());
 //app.use(passport.session())
 
+//apidocs cambiar el token en Bearer para que funcione con el usuario con el
+//que ingrese a hacer la documentacion
+app.use('/apidocs',(req, res, next) => {
+  // const token = req.cookie;
+  // if (token) {
+  //   req.headers['Authorization'] = `Bearer ${token}`;
+  // }
+  next();
+}, swaggerUIExpress.serve, swaggerUIExpress.setup(specs, {
+  explorer: true,
+  swaggerOptions: {
+    // Configuración adicional de Swagger
+    // ...
+    requestInterceptor: (request) => {
+      request.headers["Authorization"] = 'Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2VyIjp7ImlkIjoiNjQ5ZGVlZTQwZmY0YjZjNzA5ZmM1ZThlIn0sImlhdCI6MTY4ODEyODM3NCwiZXhwIjoxNjg4MTcxNTc0fQ.jT8qKoATgNx8lKGTAB82G5sA8QsY2qlZkbVgBgLZNOU'
+      return request
+    }
+  }})
+);
 
 function requireLogin(req, res, next) {
   console.log("requirelogin", req.session.user);
@@ -230,6 +261,12 @@ app.get('/mail',async (req,res)=>{
   })    
   res.send('mail enviado')
 })
+app.get(
+  "/apidocs", (req,res)=>{
+      console.log("requuuu", req)
+  }
+);
+
 
 
 // Uso de Servidor io

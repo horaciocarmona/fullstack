@@ -35,7 +35,7 @@ export const getProducts = async (req,res) => {
 
 //            return res.status(200).json(productos)
         }
-        res.status(200).send({
+        res.status(220).send({
             message: "Productos no encontrados"
         })
 
@@ -48,14 +48,12 @@ export const getProducts = async (req,res) => {
 
 export const getProduct = async (req, res) => {
     const { id } = req.params
-
     try {
         const product = await findProductById(id);
         if (product) {
             return res.status(200).json(product)
         }
-
-        return res.status(200).json({
+        return res.status(220).json({
             message: "Producto no encontrado"
         })
     } catch (error) {
@@ -85,7 +83,7 @@ export const addProducts = async (req, res,next) => {
 
         const product = await insertProducts([{ title, description, code, price, status, stock, category, owner }])
         if (product instanceof Error){
-            return res.status(200).json({
+            return res.status(400).json({
                 message: "Error en creacion de Producto"
             })
 
@@ -121,27 +119,27 @@ export const updateProduct = async (req, res,next) => {
             if (productSel && productSel.owner==req.user.email) {
 
             } else {
-                return res.status(200).json({
-                    message: "No tiene permisos para anular este producto o no existe el producto "
+                return res.status(230).json({
+                    message: "No tiene permisos para modificar este producto o no existe el producto "
                 })
             }
         }    
         const product = await updateProductById(id, { title: title, description: description, code: code, price: price, status: status, stock: stock, category: category, thumpbnail: thumpbnail })
 
         if (product instanceof Error){
-            return res.status(200).json({
-                message: "Producto no encontrado"
+            return res.status(400).json({
+                message: "Error en la actualizacion del servidor con el producto"
             })
 
         } else {
             if (product) {
                 return res.status(200).json({
-                        message: "Producto actualizado"
+                      message: "Producto actualizado"
                 })
             }
         } 
 
-        return res.status(200).json({
+        return res.status(220).json({
             message: "Producto no encontrado"
         })
 
@@ -161,7 +159,7 @@ export const deleteProduct = async (req, res) => {
             const productSel = await findProductById(req.params.id)
             if (productSel && productSel.owner==req.user.email) {
             } else {
-                return res.status(200).json({
+                return res.status(230).json({
                     message: "No tiene permisos para anular este producto o no existe el producto "
                 })
             }
@@ -169,18 +167,18 @@ export const deleteProduct = async (req, res) => {
         const product = await deleteProductById(req.params.id)
         console.log(product instanceof Error)    
         if (product instanceof Error){
-            return res.status(200).json({
-                message: "Producto no encontrado"
+            return res.status(400).json({
+                message: "Error en el servidor con la eliminacion del producto"
             })
 
         } else {
             if (product) {
                 return res.status(200).json({
-                        message: "Producto eliminado"
+                    message: "Producto eliminado"
                 })
             }
         } 
-        return res.status(200).json({
+        return res.status(220).json({
             message: "Producto no encontrado"
         })
     } catch (error) {

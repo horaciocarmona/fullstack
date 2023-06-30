@@ -1,4 +1,4 @@
-import { findUsers, createUser } from "../services/UserServices.js";
+import { findUsers,findUserById, createUser } from "../services/UserServices.js";
 
 export const getUsers = async (req, res) => {
     try {
@@ -55,30 +55,25 @@ export const getUsers = async (req, res) => {
 // //      }
 // }
 
-// export const getUserById = async (req, res) => {
-//     const { id } = req.params
+ export const getUserById = async (req, res) => {
+     const { id } = req.params
    
-//     try {
-//         console.log('logeo getuserbyid',email,managerUser)
-//         // const data=await getManagerUsers()
-//         // const managerUser = new data.ManagerUserMongoDB
-//         const user = await managerUser.getUserById(id)
-//         if (user) {
-//             console.log('usuario encontrado',user)
+     try {
+        const user = await findUserById(id);
+        if (user) {
+            return res.status(200).json(user)
+        }
 
-//             return  user
+        return res.status(200).json({
+            message: "Usuario no encontrado"
+        })
             
-//         }
-//         console.log('usuario no encontrado',id)
-//         return res.status(200).send({
-//             message: "Usuario no encontrado"
-//         })
-//     } catch (error) {
-//          res.status(500).send({
-//             message: error.message
-//         })
-//     }
-// }
+     } catch (error) {
+        return res.status(500).json({
+            message: error.message
+        })
+      }
+ }
 
 // export const getUserByEmail = async (email) => {
         
