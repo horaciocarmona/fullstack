@@ -13,7 +13,7 @@ export const Login = () => {
         const datosFormulario = new FormData(datForm.current) //Pasar de HTML a Objeto Iterable
         const cliente = Object.fromEntries(datosFormulario) //Pasar de objeto iterable a objeto simple
 
-         fetch('http://localhost:8080/api/session/login', {
+         fetch('http://localhost:8080/api/sessions/login', {
              method: "POST",
              headers: {
                  "Content-Type": "application/json"
@@ -23,7 +23,7 @@ export const Login = () => {
              .then(response => response.json())
              .then(data => {
                 // duracion de 1 dia
-                document.cookie = `token=${data.token};expires=${new Date(Date.now() + 1 * 24 * 60 * 60 * 1000).toUTCString()};path=/`
+                 document.cookie = `token=${data.token};expires=${new Date(Date.now() + 1 * 24 * 60 * 60 * 1000).toUTCString()};path=/`
                  console.log(data.token)
                 if (data.token){
                      setMensaje("ingreso correctamente")
