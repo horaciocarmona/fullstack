@@ -13,7 +13,7 @@ async(req,res)=>{
     console.log('/githubSession',req.user)
     req.session.user=req.user
     req.session.login=true
-    res.redirect('/api/session/product')
+    res.redirect('/api/sessions/product')
 })
 
 export default routerGithub

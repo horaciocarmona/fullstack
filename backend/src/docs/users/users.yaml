@@ -44,9 +44,6 @@ paths:
         "500" :
            description: "error del servidor al buscar el ususario" 
 
-
-
-
 components:
   schemas:
     Users:
@@ -63,7 +60,7 @@ components:
           description: Apellido del Usuario
         email: 
           type: String
-          description: Email del Usuario
+          description: Email unico del Usuario
         age: 
           type: Number
           description: Edad del Usuario

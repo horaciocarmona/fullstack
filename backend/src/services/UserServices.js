@@ -46,9 +46,11 @@ export const createUser = async (user) => {
 export const updateUserById = async (id,info) => {
     try {
         const mensaje = await userModel.findByIdAndUpdate(
-            new mongoose.Types.ObjectId(id),
+//            new mongoose.Types.ObjectId(id),
+            id,
             info
         );
+
         return mensaje
     } catch (error) {
         return error

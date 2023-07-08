@@ -1,7 +1,8 @@
 // import  {getUserByEmail}  from "./user.controller.js";
 import { generateToken } from "../utils/jwt.js";
+import { format, toDate } from 'date-fns';
 import passport from "passport";
-import { createUser, findUserByEmail } from "../services/UserServices.js";
+import { createUser, findUserByEmail, updateUserById } from "../services/UserServices.js";
 import jwt from "jsonwebtoken";
 import { validatePassword, createHash } from "../utils/bcrypt.js";
 import CustomError from "../helpers/middlewares/errors/CustomError.js";
@@ -80,12 +81,28 @@ export const testLoginJWT = async (req, res, next) => {
   )(req, res, next);
 };
 
-export const destroySession = (req, res, next) => {
-  if (req.session.login) {
-    req.session.destroy(() => {
-      res.redirect("/api");
-    });
-  }
+export const destroySession = async (req, res, next) => {
+  const fechaActual = new Date();
+  const userdate = await updateUserById(req.user._id,
+    {first_name:req.user.first_name,
+     last_name:req.user.last_name,
+     email:req.user.email,
+     age:req.user.age,
+     last_connection:fechaActual,
+    }
+  )
+  res.cookie('jwt', '', { expires: new Date(0) });
+  res.send({ message: 'Logout successful' }); 
+  //return res.status(200).json('jwt', '', { expires: new Date(0) });
+  next()
+  // if (req.session.login) {
+  //   req.session.destroy(async () => {
+  //     // registro fecha hora de salida del ususario
+
+
+  //     res.redirect("/api");
+  //   });
+  // }
 };
 
 export const product = (req, res, next) => {
@@ -200,6 +217,28 @@ export const loginUser = async (req, res, next) => {
             req.logger.info(
               `El usuario ${userBDD.first_name} ha iniciado sesión correctamente.`
             );
+            // grabo fecha de login  
+            const fechaActual = new Date();
+            const año = fechaActual.getFullYear();
+            const mes = fechaActual.getMonth() + 1; // Los meses comienzan desde 0
+            const dia = fechaActual.getDate();
+            const horas = fechaActual.getHours();
+            const minutos = fechaActual.getMinutes();
+            const segundos = fechaActual.getSeconds();
+            
+            console.log(`Fecha: ${dia}/${mes}/${año}`);
+            console.log(`Hora: ${horas}:${minutos}:${segundos}`);
+            const timestamp=Date.now()
+            const fecha = new Date(timestamp)
+            console.log('logindate',fechaActual)  
+            const userdate = await updateUserById(userBDD._id,
+              {first_name:userBDD.first_name,
+               last_name:userBDD.last_name,
+               email:userBDD.email,
+               age:userBDD.age,
+               last_connection:fechaActual,
+              }
+            )  
             // Ya que el usuario es valido, genero un nuevo token
             const token = jwt.sign(
               { user: { id: userBDD._id } },
@@ -216,6 +255,7 @@ export const loginUser = async (req, res, next) => {
           //El token existe, asi que lo valido
           req.logger.warn(`El usuario ${user.last_name} ya habia obtenido un token`);
           const token = req.cookies.jwt;
+          const fechaActual = new Date();
           jwt.verify(
             token,
             process.env.PRIVATE_KEY_JWT,
@@ -228,6 +268,15 @@ export const loginUser = async (req, res, next) => {
                 req.logger.info(
                   `El usuario ${userBDD.first_name} ha iniciado sesión correctamente.`
                 );
+                const userdate = await updateUserById(userBDD._id,
+                  {first_name:userBDD.first_name,
+                   last_name:userBDD.last_name,
+                   email:userBDD.email,
+                   age:userBDD.age,
+                   last_connection: fechaActual,
+                  }
+                )  
+    
                 res.cookie("jwt", token, {httpOnly: true });
                 req.user = user;
                 next();

@@ -1,5 +1,6 @@
 import "dotenv/config";
 import swaggerJSDoc from 'swagger-jsdoc'
+//import addLogger from "./middleware/logger.middleware.js";
 import swaggerUIExpress from 'swagger-ui-express'
 import { addLogger } from './utils/logger.js'
 import { faker } from '@faker-js/faker';
@@ -193,6 +194,7 @@ app.set("views", path.resolve(__dirname, "./views"));
 app.set("port", process.env.PORT || 5000);
 
 //Routers
+app.use(addLogger)
 app.use("/", express.static(__dirname + "/public"));
 app.use("/", routerSocket);
 app.use("/", router);

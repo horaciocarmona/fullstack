@@ -32,8 +32,21 @@ const userSchema = new Schema({
         type: Schema.Types.ObjectId,
         ref: "carts"
     },
-
-
+    documents: {
+        type: [
+          {
+            name:{
+              type: String
+            },
+            reference:{
+              type: String
+            },
+          },
+        ],
+      },
+      last_connection:{
+        type:Date
+      },      
 })
 
 

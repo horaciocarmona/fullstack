@@ -3,6 +3,7 @@ import passport from "passport"
 
 //import { generateToken } from "../utils/jwt.js";
 //import { validatePassword } from '../utils/bcrypt.js'
+
 import { getSession,destroySession,testLogin,testLoginJWT,product,registerUser, loginUser} from "../controllers/session.controller.js"
 import { passportError, authorization } from "../utils/messageErrors.js";
 const routerSession=Router()
@@ -13,7 +14,7 @@ const routerSession=Router()
 //routerSession.post("/register",passport.authenticate('register'),registerUser)
 routerSession.post("/register",registerUser)
 routerSession.post('/login',loginUser)
-routerSession.get('/logout', destroySession)
+routerSession.post('/logout',passportError('current'), destroySession)
 routerSession.get('/product',passport.authenticate('current',{session:false}), product)
 
 // consulta las cookies de mi navegador

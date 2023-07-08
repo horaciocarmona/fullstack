@@ -14,9 +14,9 @@ const router=Router()
 router.use("/", routerSocket);
 router.use("/api/products", routerProd);
 router.use("/api/carts", routerCart);
-router.use("/api/session",routerSession)
+router.use("/api/sessions",routerSession)
 router.use("/api/users",routerUser)
-router.use("/session",routerGithub)
+router.use("/sessions",routerGithub)
 router.use("/api/mockingProducts",routerMockingProducts)
 router.use("/api/password",routerPassword)
 

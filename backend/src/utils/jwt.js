@@ -15,7 +15,7 @@ export const generateToken = (user) => {
 export const authToken = (req, res, next) => {
     //seria el login
     //consulto el heder
-    const authHeader = req.headears.Authorization;
+    const authHeader = req.headears.authorization;
     if (!authHeader) {
         //entra si no inicio sesion o vencio el token
         return res.status(401).send({
