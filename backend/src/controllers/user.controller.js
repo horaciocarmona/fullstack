@@ -1,4 +1,4 @@
-import { findUsers,findUserById, createUser } from "../services/UserServices.js";
+import { findUsers,findUserById, updateUserById } from "../services/UserServices.js";
 
 export const getUsers = async (req, res) => {
     try {
@@ -75,7 +75,55 @@ export const getUsers = async (req, res) => {
       }
  }
 
-// export const getUserByEmail = async (email) => {
+ export const postDocumentsById = async (req, res) => {
+    const { uid } = req.params
+    if (!req.files) {
+        return res.status(400).send('No se seleccionó ningún archivo.');
+    }
+    let documentos=[]
+    req.files.forEach(file => { 
+        // console.log('Nombre del archivo:', file.originalname);
+        // console.log('Nombre del archivo en el servidor:', file.filename);
+        // console.log('Tipo de archivo:', file.mimetype);
+        // console.log('Tamaño del archivo:', file.size);
+        // console.log('Ruta del archivo:', file.path);
+        documentos.push({name:file.filename,reference:file.path})
+    }) 
+    try {
+       const userBDD = await findUserById(uid);
+       if (userBDD instanceof Error) {
+           req.logger.error(`Error en la coneccion a al base de datos ${userBDD}`);
+           return res.status(400).json({
+              message: "Error en coneccion a BDD: "+userBDD,
+           });
+       } else {
+           if (userBDD) {
+//                console.log('documents',documentos)
+//                console.log('userbdd',userBDD)
+                const userdate = await updateUserById(uid,
+                    {first_name:userBDD.first_name,
+                     last_name:userBDD.last_name,
+                     email:userBDD.email,
+                     age:userBDD.age,
+                     documents:documentos   
+                    }
+                )  
+  //              console.log('userdate',userdate)
+
+                return res.status(200).json({message:"Imagen cargada"})
+            }
+            return res.status(200).json({
+                 message: "Usuario no encontrado"
+            })
+        }
+    } catch (error) {
+       return res.status(500).json({
+           message: error.message
+       })
+     }
+}
+
+ // export const getUserByEmail = async (email) => {
         
 //     try {
 //         console.log('manageruser')

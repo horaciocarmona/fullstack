@@ -5,7 +5,7 @@ import { Strategy as JwtStrategy, ExtractJwt } from 'passport-jwt';
 export const passportError = (strategy) => {
     return async (req, res, next) => {
         const authorizationHeader = req.cookies.jwt;
-        console.log('autorization',authorizationHeader)
+ //       console.log('autorization',authorizationHeader)
         if (authorizationHeader) {
           const token = authorizationHeader.replace('Bearer ', '');
           req.headers['authorization'] = `Bearer ${token}`;
@@ -13,7 +13,7 @@ export const passportError = (strategy) => {
       
        
         passport.authenticate(strategy,{session:false}, (error, user, info) => {
-            console.log('áutenticate',user)
+//            console.log('áutenticate',user)
             if (error) {
                 return next(error)
             }
@@ -38,8 +38,8 @@ export const authorization = (rol) => {
                 error: "User no autorizado"
             })
         }
-        console.log('req.user',req.user.rol ) //Acceso a las propiedades del user en JWT
-        console.log('rol',rol) //Acceso a las propiedades del user en JWT
+//        console.log('req.user',req.user.rol ) //Acceso a las propiedades del user en JWT
+//        console.log('rol',rol) //Acceso a las propiedades del user en JWT
 
         if (rol.includes(req.user.rol)) {
             console.log('encontro rol') //Acceso a las propiedades del user en JWT
