@@ -191,7 +191,7 @@ function auth(req, res, next) {
 app.engine("handlebars", engine()); //configuracion de hbs
 app.set("view engine", "handlebars");
 app.set("views", path.resolve(__dirname, "./views"));
-app.set("port", process.env.PORT || 5000);
+app.set("port", process.env.PORT || 8080);
 
 //Routers
 app.use(addLogger)

@@ -231,7 +231,7 @@ export const loginUser = async (req, res, next) => {
             const timestamp=Date.now()
             const fecha = new Date(timestamp)
             console.log('logindate',fechaActual)  
-            const userdate = await updateUserById(userBDD._id,
+            const userdate = await updateUserById(userBDD._id.toString(),
               {first_name:userBDD.first_name,
                last_name:userBDD.last_name,
                email:userBDD.email,
@@ -268,7 +268,7 @@ export const loginUser = async (req, res, next) => {
                 req.logger.info(
                   `El usuario ${userBDD.first_name} ha iniciado sesión correctamente.`
                 );
-                const userdate = await updateUserById(userBDD._id,
+                const userdate = await updateUserById(userBDD._id.toString(),
                   {first_name:userBDD.first_name,
                    last_name:userBDD.last_name,
                    email:userBDD.email,

@@ -1,15 +1,81 @@
-import { findUsers,findUserById, updateUserById } from "../services/UserServices.js";
+import { findUsers,findUserById, updateUserById,deleteUserById } from "../services/UserServices.js";
+import nodemailer from 'nodemailer'
 
 export const getUsers = async (req, res) => {
     try {
         const users = await findUsers()
-        res.status(200).send(users)
+        const nuevaLista = users.map(objeto => {
+            const nuevoObjeto = {last_name:objeto.last_name,first_name:objeto.first_name,email:objeto.email,rol:objeto.rol};
+            return nuevoObjeto;
+          });
+          res.status(200).json(nuevaLista)
 
     } catch (error) {
         res.status(500).send(error)
     }
 
 }
+
+export const deleteUsers = async (req, res) => {
+    try {
+        const users = await findUsers()
+        users.forEach(async objeto => {
+            const fechaActual=new Date()    
+            // Calcular la diferencia en milisegundos
+            let diferenciaMs=0
+            if (objeto.last_connection) {
+                diferenciaMs = fechaActual - objeto.last_connection;
+            } else {
+                diferenciaMs = fechaActual - new Date(0);
+            }    
+                // Calcular la diferencia en días
+            const diferenciaDias = Math.floor(diferenciaMs / (1000 * 60 * 60 * 24));
+//            console.log(objeto)
+            if (diferenciaDias > 2) {
+                 const transport=nodemailer.createTransport({
+                    service:'gmail',
+                    port: 587,
+                    auth:{
+                        user:'horacio.carmona@gmail.com',
+                        pass:process.env.PASSWORDGMAIL
+                    }
+                 })
+    
+                  // Contenido del correo electrónico
+                 const mailOptions = {
+                     from: 'horacio.carmona@gmail.com',
+                     to: objeto.email,
+                     subject: 'Se dio de baja su cuenta por inactividad de mas de dos dias',
+                     html: `<p> Se De baja la cuenta por inactividad:</p>`
+                 };  
+    
+                // Envío del correo electrónico
+                  transport.sendMail(mailOptions, (error, info) => {
+                     if (error) {
+                     } else {
+                         req.logger.info( 
+                         'Correo electrónico enviado: ' + info.response
+                     )
+                   }
+                 }) 
+
+                console.log(objeto._id.toString())        
+                const userDelete = await deleteUserById(objeto._id.toString())            // Configuración de Nodemailer
+                console.log(userDelete)        
+
+                console.log('Han pasado más de dos días entre las fechas.');
+            } else {
+              console.log('No han pasado más de dos días entre las fechas.');
+            }
+        })
+        res.status(200).json({message:'Se limpiaron los ususarios'})
+
+    } catch (error) {
+        res.status(500).send(error)
+    }
+
+}
+
 // import  {ManagerUserMongoDB}  from "../dao/MongoDB/models/User.js";
 // export const managerUser =  new ManagerUserMongoDB()
 

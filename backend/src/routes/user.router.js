@@ -1,5 +1,5 @@
 import { Router } from 'express'
-import { getUsers,getUserById,postDocumentsById} from "../controllers/user.controller.js";
+import { getUsers,getUserById,postDocumentsById,deleteUsers} from "../controllers/user.controller.js";
 import { passportError, authorization } from "../utils/messageErrors.js";
 import multer from "multer";
 const storage = multer.diskStorage({
@@ -29,6 +29,7 @@ const routerUsers = Router()
   
 routerUsers.get('/', getUsers)
 routerUsers.get("/:id",passportError('current'),authorization(['admin']),getUserById)
+routerUsers.delete('/', deleteUsers)
 routerUsers.post("/:uid/documents",passportError('current'),authorization(['admin']),upload.array("documents",30),postDocumentsById)
 routerUsers.post("/:uid/profiles",passportError('current'),authorization(['admin']),upload.array("profiles",30),postDocumentsById)
 routerUsers.post("/:uid/products",passportError('current'),authorization(['admin']),upload.array("products",30),postDocumentsById)

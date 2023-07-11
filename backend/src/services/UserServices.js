@@ -46,8 +46,8 @@ export const createUser = async (user) => {
 export const updateUserById = async (id,info) => {
     try {
         const mensaje = await userModel.findByIdAndUpdate(
-//            new mongoose.Types.ObjectId(id),
-            id,
+            new mongoose.Types.ObjectId(id),
+//            id,
             info
         );
 
@@ -58,3 +58,14 @@ export const updateUserById = async (id,info) => {
 
 }
 
+export const deleteUserById = async (id) => {
+    try {
+      const mensaje = await userModel.findByIdAndRemove(
+        new mongoose.Types.ObjectId(id)
+      );
+      return mensaje;
+    } catch (error) {
+       return error;
+    }
+  };
+  
