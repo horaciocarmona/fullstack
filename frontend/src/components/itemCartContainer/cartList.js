@@ -26,6 +26,8 @@ const CartList=()=>{
         <div className="principalContainer">
                 <h1>Carrito</h1>
                 <h2>Total unidades {totalCantidadCarrito} Importe total ${totalImporteCarrito} </h2>
+                <h2>Si realiza la compra se le enviara un mail de confirmacion </h2>
+
                 <div className="cards-principalContainer">
                 {
                  cart.map((producto,i) => ( 

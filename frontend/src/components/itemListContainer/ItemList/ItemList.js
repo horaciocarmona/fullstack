@@ -5,17 +5,23 @@ import productosApi from "../../ApiRest/productosApi"
 import {useParams} from "react-router-dom"
 // import {doc,getFirestore,collection, getDocs,query,where,addDoc,updateDoc,writeBatch} from "firebase/firestore"
 import Button from 'react-bootstrap/Button';
+import {useContext} from "react"
+import {cartContext} from "../../../context/cartContext"
 
 const ItemList=()=>{
     const [filter,setFilter]=useState("");
     const [listProducts,setListadoProductos]=useState([]);
     const {categoria}=useParams();
     const [numberCount,setNumberCount]=useState(0);
+    const {getToCart}=useContext(cartContext);
+
     // console.log(productosApi());
      const getProductos = async() => {
-         const productos = await productosApi();
-         setListadoProductos(productos);
-     };
+        const productos = await productosApi();
+        setListadoProductos(productos);
+        getToCart();
+
+    };
 
     useEffect(()=>{
         getProductos();
@@ -58,13 +64,13 @@ const ItemList=()=>{
 
                 {/* <Button onClick={()=>{sendOrder()}}>send</Button>
                 <Button onClick={()=>{updateOrder()}}>update</Button>
-                <Button onClick={()=>{batchOrders()}}>batch</Button> */}
+                <Button onClick={()=>{batchOrders()}}>batch</Button>   */}
 
                 <h1>Producto</h1>
                 <input id="filter" name="filter" type="text" value={filter} onChange={(event)=>setFilter(event.target.value)}></input>
                 <div className="cards-principal">
 
-                {/* {categoria? 
+                { categoria? 
 
                  listProducts.filter((producto)=>producto.nombre.includes(filter)).filter((producto)=>producto.category===categoria).map((producto,i) => (
 
@@ -95,7 +101,7 @@ const ItemList=()=>{
                  ))
                
                 }
- */}
+ 
                 </div> 
             
             </div>

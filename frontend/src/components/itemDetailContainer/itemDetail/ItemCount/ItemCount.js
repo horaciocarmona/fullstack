@@ -3,16 +3,22 @@ import Button from 'react-bootstrap/Button';
 import "./ItemCount.scss";
 import {Link} from "react-router-dom" 
 
-export default function ItemCount({handleOnAdd,stockProducto}) {
+export default function ItemCount({handleOnAdd,stockProducto,stock,setStock}) {
     const [numberCount,setNumberCount]=React.useState(0);
-
     const handleSumaCantidad=()=>{
-            let limite=stockProducto-numberCount;
-            limite ? setNumberCount(numberCount+1):setNumberCount(numberCount);
+//            let limite=stock-numberCount
+            if (stock > 0) {
+                setNumberCount(numberCount+1)
+                setStock(stock-1)
+            } else {
+                 setNumberCount(numberCount)
+                 setStock(stock)
+            }
      };   
      const handleRestaCantidad=()=>{
         setNumberCount(numberCount-1);
-     }
+        setStock(stock+1)
+    }
 
      const handleConfirmar = () => { 
         handleOnAdd(numberCount)

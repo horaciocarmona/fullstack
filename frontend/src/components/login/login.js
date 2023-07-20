@@ -1,8 +1,10 @@
 import { useRef } from "react"
 import { useState } from "react"
+//import { cartContext } from "../../../context/cartContext"
 
 export const Login = () => {
     const [mensaje, setMensaje] = useState('')
+    const [user, setUser] = useState({});
 
     const datForm = useRef() //Crear una referencia para consultar los valoresa actuales del form
     const datFormReset = useRef() //Crear una referencia para consultar los valoresa actuales del form
@@ -12,7 +14,6 @@ export const Login = () => {
         e.preventDefault()
         const datosFormulario = new FormData(datForm.current) //Pasar de HTML a Objeto Iterable
         const cliente = Object.fromEntries(datosFormulario) //Pasar de objeto iterable a objeto simple
-
          fetch('http://localhost:8080/api/sessions/login', {
              method: "POST",
              headers: {
@@ -26,10 +27,14 @@ export const Login = () => {
                  document.cookie = `token=${data.token};expires=${new Date(Date.now() + 1 * 24 * 60 * 60 * 1000).toUTCString()};path=/`
                  console.log(data.token)
                 if (data.token){
-                     setMensaje("ingreso correctamente")
+                    setMensaje("ingreso correctamente")
+                    setUser(JSON.stringify(cliente))
                 }
         })
-        .catch(error => setMensaje(`Error en ingreso ${error}`))
+        .catch(error => {
+            setUser({})
+            setMensaje(`Error en ingreso ${error}`)
+        })    
         console.log(cliente)
         e.target.reset() //Reset form
                     
