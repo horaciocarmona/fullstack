@@ -6,7 +6,6 @@ import {generateProductErrorInfo} from "../helpers/middlewares/errors/info.js"
 import {generateProductAddErrorInfo} from "../helpers/middlewares/errors/info.js"
 //
 export const getProducts = async (req,res) => {
-    console.log(`consulta con limit page category name sort}`);
     const {
       page = "1",
       limit = "10",
@@ -29,7 +28,6 @@ export const getProducts = async (req,res) => {
     // //    const ord = sort == "asc" ? 1 : -1
     try {
         const productos = await findProducts(parseInt(limit), parseInt(page),title,category, parseInt(ord))
-        console.log(productos)
         if (productos) {
             return res.status(200).send(productos)
 
@@ -154,7 +152,6 @@ export const updateProduct = async (req, res,next) => {
 
 export const deleteProduct = async (req, res) => {
     try {
-        console.log('delete product',req.params.id)
         if (req.user.rol=="premium") {
             const productSel = await findProductById(req.params.id)
             if (productSel && productSel.owner==req.user.email) {
@@ -165,7 +162,6 @@ export const deleteProduct = async (req, res) => {
             }
         }    
         const product = await deleteProductById(req.params.id)
-        console.log(product instanceof Error)    
         if (product instanceof Error){
             return res.status(400).json({
                 message: "Error en el servidor con la eliminacion del producto"
@@ -188,4 +184,49 @@ export const deleteProduct = async (req, res) => {
     }
 
     
+}
+
+export const postDocumentsById = async (req, res) => {
+    const { uid } = req.params
+    if (!req.files) {
+        return res.status(400).send('No se seleccionó ningún archivo.');
+    }
+    let documento={}
+    req.files.forEach(file => { 
+        // console.log('Nombre del archivo:', file.originalname);
+        // console.log('Nombre del archivo en el servidor:', file.filename);
+        // console.log('Tipo de archivo:', file.mimetype);
+        // console.log('Tamaño del archivo:', file.size);
+        // console.log('Ruta del archivo:', file.path);
+        documento={name:file.filename,reference:file.path}
+    }) 
+    try {
+       const productBDD = await findProductById(uid);
+       if (productBDD instanceof Error) {
+           req.logger.error(`Error en la coneccion a al base de datos ${productBDD}`);
+           return res.status(400).json({
+              message: "Error en coneccion a BDD: "+productBDD,
+           });
+       } else {
+           if (productBDD) {
+//                console.log('documents',documentos)
+//                console.log('userbdd',userBDD)
+                const userdate = await updateProductById(uid,
+                    {
+                     thumpbnail:"img/products/"+documento.name
+                    }
+                )  
+  //              console.log('userdate',userdate)
+
+                return res.status(200).json({message:"Imagen cargada"})
+            }
+            return res.status(200).json({
+                 message: "Producto no encontrado"
+            })
+        }
+    } catch (error) {
+       return res.status(500).json({
+           message: error
+       })
+     }
 }

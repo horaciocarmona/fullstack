@@ -2,9 +2,10 @@ import cartModel from "../models/MongoDB/CartModel.js";
 import productModel from "../models/MongoDB/ProductModel.js";
 import ticketModel from "../models/MongoDB/TicketModel.js";
 import mongoose from "mongoose";
+import nodemailer from 'nodemailer'
+import { __dirname } from "../path.js";
 
 export const findCartById = async (id) => {
-  console.log("consulta de un elemento de MongoDb");
   try {
     const elemento = await cartModel.findById(new mongoose.Types.ObjectId(id));
     return elemento;
@@ -37,19 +38,15 @@ export const addCarts = async (elementos) => {
 
 export const insertProductCart = async (id, idProd, cant) => {
   try {
-    console.log("insert productcart", id, idProd);
     let cartId = new mongoose.Types.ObjectId(id);
     let prodId = new mongoose.Types.ObjectId(idProd);
     let carrito = await cartModel.findById(cartId);
-    console.log("carrito", carrito);
     const product = carrito.products.find((product) =>
       new mongoose.Types.ObjectId(idProd).equals(product.prodId)
     );
     const nuevoProducts = carrito.products;
-    console.log("nuevo producto", carrito.products);
     if (product) {
       product.cant = cant;
-      console.log(cant);
     } else {
       const nuevoProducts = carrito.products.push({
         prodId: prodId,
@@ -62,7 +59,7 @@ export const insertProductCart = async (id, idProd, cant) => {
   } catch (error) {
     return error;
   }
-};
+}
 
 export const findProductsCart = async () => {
   try {
@@ -78,17 +75,13 @@ export const deleteProductCartById = async (id, idProd) => {
   try {
     let cartId = new mongoose.Types.ObjectId(id);
     let carrito = await cartModel.findById(cartId);
-    console.log('carrito')
     carrito.products.forEach(element => {
-      console.log('element',element)
     });
     const resto = carrito.products.filter(
-       (product) => !idProd.equals(product.prodId)
+       (product) => (idProd!==product.prodId.toString())
     );
 //    carrito.products = resto;
-    console.log('resto',carrito) 
     const respuesta = await cartModel.findByIdAndUpdate(cartId,{products:resto});
-    console.log('update',respuesta)  
     return respuesta;
   } catch (error) {
     return error;
@@ -123,7 +116,6 @@ export const addProductsCart = async (id, idProd, cant) => {
     const nuevoProducts = carrito.products;
     if (product) {
       product.cant = cant;
-      console.log(cant);
     } else {
       const nuevoProducts = carrito.products.push({
         prodId: prodId,
@@ -140,50 +132,107 @@ export const addProductsCart = async (id, idProd, cant) => {
 
 export const purchaseTicket = async (id, user) => {
   try {
+    let importeTicket=0.00;
     let cartId = new mongoose.Types.ObjectId(id);
-    let carrito= await findCartById(id)
+    let carrito= await cartModel.findById(cartId)
     // obtengo los precios de los productos del carrito
-    let productsTicket = await findProductsCart();
+    const productsTicket = await findProductsCart();
     // calculo el importe del carrito y genero orden y carrito de productos no vendidos
     let cartProductsNotSales=carrito
-    let ticket = await addOrder(productsTicket[0].products, user,cartProductsNotSales,id);
+    const ticketOrder=[];
+    console.log("carrito adorder", carrito);
+    // creo ticket con productos con stock y carrito no vendidos 
+    for (const produ of productsTicket[0].products) {
+    // carrito.forEach( produ => {
+      const productBDD = await productModel.findById(new mongoose.Types.ObjectId(produ.prodId._id));
+      if (productBDD) {
+        if (productBDD.stock >= produ.cant) {
+           ticketOrder.push(produ);
+        }
+      }
+    }
+    console.log("ticketorder",ticketOrder)
+  
+
     // actualizo stock 
-    await actustock(ticket, user,cartId); 
-    return ticket
+    if (ticketOrder.length > 0) {
+      //Calculo importe del carrito
+        importeTicket = ticketOrder.reduce(
+           (total, produ) => total + produ.prodId.price * produ.cant,
+          0
+        );
+        console.log("importeticket", importeTicket);
+         // grabo la orden de compra  
+        const buyOrder = await buyToCart(importeTicket, user)
+        if (buyOrder) {
+          await actustock(ticketOrder, user,cartId); 
+
+          // Contenido del correo electrónico
+          let textoEmail="<h2>Detalle</h2>"
+          ticketOrder.forEach((produ)=>
+              textoEmail=textoEmail+`<p> producto:${produ.prodId.title} unidades:${produ.cant} precio:${produ.prodId.price}</p>`
+          )
+          textoEmail=textoEmail+`<h2>Pago ${importeTicket}</h2>`
+
+          console.log('textoemail',textoEmail)
+          console.log("user", user);
+
+          const transport=nodemailer.createTransport({
+          service:'gmail',
+          port: 587,
+          auth:{
+            user:'horacio.carmona@gmail.com',
+            pass:process.env.PASSWORDGMAIL
+          }
+        })
+        const mailOptions = {
+          from: 'horacio.carmona@gmail.com',
+          to: user.email,
+          subject: 'Usted realizo una compra en Bartender HC',
+          html:" <h1> Ticket </h1>"+
+          "<img src='cid:imagenadjunta' width='100' height='100'/>"+
+          textoEmail,
+          attachments: [
+             {
+               filename: '1689797694819logobartender.png',
+               path: `${__dirname}`+'/public/img/documents/1689797694819logobartender.png',
+               cid: 'imagenadjunta'
+             }
+           ]          
+        };  
+
+      //  ticket.forEach((obj)=>{textoEmail+`<p> ${obj.prodId.tittle} </p>`;
+      //  +`<p> ${obj.prodId.price} </p>`
+      //  })     
+      //  console.log('textoemail',textoEmail)
+
+       // Envío del correo electrónico
+        transport.sendMail(mailOptions, (error, info) => {
+           if (error) {
+              console.log('Error Correo electrónico enviado: ' + error)
+        
+           } else {
+              console.log('Correo electrónico enviado: ')
+           }
+        }) 
+            return ticketOrder
+        } else {
+            return null
+        } 
+
+    }  
+    return ticketOrder
   } catch (error) {
     return error;
   }
-};
+}
 
-const addOrder = async (carrito, user,cartProductsNotSales,idCart) => {
-  console.log("ticket", carrito);
-  let ticket=[]
-  // creo ticket con productos con stock y carrito no vendidos 
-  await carrito.forEach(async produ => {
-      if (produ.prodId.stock >= produ.cant) {
-        ticket.push(produ)
-        await deleteProductCartById(idCart,produ.prodId._id)
-      } 
-  });
-  //Calculo importe del carrito
-  const importeTicket = await ticket.reduce(
-    (total, produ) => total + produ.prodId.price * produ.cant,
-    0
-  );
-  console.log("importeticket", importeTicket);
-  // grabo la orden de compra  
-  const buyOrder = await buyToCart(importeTicket, user);
-  if (buyOrder) {
-      return ticket
-  } else {
-      return {}
-  } 
-};
 
 const actustock = async (carrito) => {
   await carrito.forEach(async produ => {
     if (produ.prodId.stock >= produ.cant) {
-         const { title, description, code, price, status, stock, category, thumbnails } = produ.prodId
+      console.log("actiañozp stock de ",produ)
+      const { title, description, code, price, status, stock, category, thumbnails } = produ.prodId
          let prodUpdate={ title: title, description: description, code: code, price: price, status: status, stock: stock, category: category, thumbnails: thumbnails }
          prodUpdate.stock-=produ.cant
          await productModel.findByIdAndUpdate(

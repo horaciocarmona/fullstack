@@ -14,7 +14,7 @@ routerCart.delete("/:cid/products/:pid",passportError('current'),authorization([
 //EndPoint actualiza-carga carrito cid con productos body
 routerCart.put("/:cid",passportError('current'),authorization('user'), updateProductsCart) 
 
-  //EndPoint carga en un producto al carrito ruta\api\carts cantidad
+//EndPoint carga en un producto al carrito ruta\api\carts cantidad
 routerCart.put("/:cid/products/:pid",passportError('current'),authorization(['user']), addProductCart) 
 
 //EndPoint borra todos los producto del carrito cid

@@ -8,7 +8,6 @@ if (parseInt(process.env.SELECTEDBDD) == 1) {
      import("../models/MongoDB/ProductModel.js").then(
       module => {
        productModel = module.default;
-       console.log('productmodel',module.default)
      }
     ).catch(error =>console.log(error))
   // console.log(pp)
@@ -23,13 +22,10 @@ import mongoose from "mongoose";
 
 export const findProducts = async (limit, page, title, category, ord) => {
   try {
-    console.log("consulta paginate", limit, page, title, category, ord);
     // postman ejemplo ingreso de parametros
     //http://localhost:8080/api/products?page=1&sort=des&title=Campari 750ml&category=grande&limit=2
     let products;
     if (parseInt(process.env.SELECTEDBDD) == 1) {
-      console.log('pagina')
-      console.log(productModel)
       await productModel.paginate({},{limit:10,page:1})
 //      console.log(pp)
       products =

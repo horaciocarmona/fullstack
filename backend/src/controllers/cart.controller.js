@@ -22,7 +22,7 @@ export const createCart = async (req, res) => {
     const respuesta = await addCarts([{}]);
     return res.status(200).json(respuesta);
   } catch (error) {
-    return res.status(500).json({
+      return res.status(500).json({
       message: error.message,
     });
   }
@@ -32,7 +32,6 @@ export const getProductsCart = async (req, res) => {
   try {
     const productos = await findProductsCart();
     if (productos) {
-      console.log("productos", productos);
       return res.status(200).json(productos);
     }
     return res.status(200).json({
@@ -40,7 +39,7 @@ export const getProductsCart = async (req, res) => {
     });
   } catch (error) {
     return res.status(500).json({
-      message: error.message,
+      message: error
     });
   }
 };
@@ -60,8 +59,8 @@ export const addProductCart = async (req, res) => {
       });
     } else {
       if (product) {
-        return res.status(200).json({
-          message: "Producto agregado al carrito",
+        return res.status(200).json({product:`${product}`,
+          message: `Producto agregado al carrito ${product}`,
         });
       }
     }
@@ -151,11 +150,11 @@ export const deleteProductCart = async (req, res) => {
     const product = await deleteProductCartById(req.params.cid, req.params.pid);
     if (product instanceof Error) {
       return res.status(400).json({
-        message: "Error de eliminacion,no se pudo eliminar",
+        message: `Error de eliminacion,no se pudo eliminar ${product}`,
       });
     } else {
       if (product) {
-        return res.status(200).json({
+        return res.status(200).json({payload:product,
           message: "Producto eliminado",
         });
       }
@@ -224,7 +223,6 @@ export const updateProductsCart = async (req, res) => {
 export const purchaseCart = async (req, res) => {
   try {
     if (req.params.cid) {
-      console.log(req.params.cid);
       const ticket = await purchaseTicket(req.params.cid, req.user);
       if (ticket) {
         return res.status(200).json({

@@ -1,4 +1,4 @@
-import { findUsers,findUserById, updateUserById,deleteUserById } from "../services/UserServices.js";
+import { findUsers,findUserById, updateUserById,deleteUserById,findUserByEmail } from "../services/UserServices.js";
 import nodemailer from 'nodemailer'
 
 export const getUsers = async (req, res) => {
@@ -59,9 +59,7 @@ export const deleteUsers = async (req, res) => {
                    }
                  }) 
 
-                console.log(objeto._id.toString())        
                 const userDelete = await deleteUserById(objeto._id.toString())            // Configuración de Nodemailer
-                console.log(userDelete)        
 
                 console.log('Han pasado más de dos días entre las fechas.');
             } else {
@@ -122,24 +120,78 @@ export const deleteUsers = async (req, res) => {
 // }
 
  export const getUserById = async (req, res) => {
-     const { id } = req.params
-   
+    const { id } = req.params
      try {
         const user = await findUserById(id);
-        if (user) {
-            return res.status(200).json(user)
-        }
-
-        return res.status(200).json({
-            message: "Usuario no encontrado"
-        })
-            
+        if (user instanceof Error) {
+            req.logger.error(`Error en la coneccion a al base de datos ${user}`);
+            return res.status(400).json({
+              message: "Error en coneccion a BDD",
+            });
+        } else {
+             if (user) {
+                return res.status(200).json(user)
+             }
+             return res.status(200).json({
+                 message: "Usuario no encontrado"
+             })
+        }            
      } catch (error) {
         return res.status(500).json({
-            message: error.message
+            message: error
         })
       }
  }
+
+ export const deleteUser = async (req, res) => {
+    const { id } = req.params
+
+    try {
+        const user = await deleteUserById(id);
+        if (user instanceof Error) {
+            req.logger.error(`Error en la coneccion a al base de datos ${user}`);
+            return res.status(400).json({
+              message: "Error en coneccion a BDD",
+            });
+        } else {
+              if (user) {
+                   return res.status(200).json({rol:user.rol,first_name:user.first_name,last_name:user.last_name,email:user.email,message:'se elimino el usuario'})
+              }
+              return res.status(200).json({
+              message: "Usuario no encontrado"
+              })
+        }            
+     } catch (error) {
+        return res.status(500).json({
+            message: error
+        })
+      }
+ }
+
+ export const getUserByEmail = async (req, res) => {
+    const { email } = req.body
+      try {
+       const user = await findUserByEmail(email);
+       if (user instanceof Error) {
+           req.logger.error(`Error en la coneccion a al base de datos ${user}`);
+           return res.status(400).json({
+           message: "Error en coneccion a BDD",
+        });
+        } else {
+
+            if (user) {
+                return res.status(200).json(user)
+            }
+            return res.status(200).json({
+            message: "Usuario no encontrado"
+            })
+        }           
+    } catch (error) {
+       return res.status(500).json({
+           message: error
+       })
+     }
+}
 
  export const postDocumentsById = async (req, res) => {
     const { uid } = req.params
@@ -184,12 +236,48 @@ export const deleteUsers = async (req, res) => {
         }
     } catch (error) {
        return res.status(500).json({
-           message: error.message
+           message: error
        })
      }
 }
 
- // export const getUserByEmail = async (email) => {
+export const updateUser = async (req, res) => {
+    const { id } = req.params
+    const {rol} = req.body
+//    console.log('updateuser',id,rol)
+    try {
+       const userBDD = await findUserById(id);
+       if (userBDD instanceof Error) {
+           req.logger.error(`Error en la coneccion a al base de datos ${userBDD}`);
+           return res.status(400).json({
+              message: "Error en coneccion a BDD: "+userBDD,
+           });
+       } else {
+           if (userBDD) {
+//                console.log('documents',documentos)
+//                console.log('userbdd',userBDD)
+                const userdate = await updateUserById(id,
+                    {first_name:userBDD.first_name,
+                     last_name:userBDD.last_name,
+                     email:userBDD.email,
+                     age:userBDD.age,
+                     rol:rol   
+                    }
+                )  
+                return res.status(200).json({rol:userdate.rol,first_name:userdate.first_name,last_name:userdate.last_name,email:userdate.email,message:"se actualizo"})
+            }
+            return res.status(200).json({
+                 message: "Usuario no encontrado"
+            })
+        }
+    } catch (error) {
+       return res.status(500).json({
+           message: error
+       })
+     }
+}
+
+// export const getUserByEmail = async (email) => {
         
 //     try {
 //         console.log('manageruser')

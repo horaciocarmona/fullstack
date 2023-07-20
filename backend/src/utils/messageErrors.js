@@ -18,7 +18,7 @@ export const passportError = (strategy) => {
                 return next(error)
             }
             if (!user) { //Si no existe mi usuario
-                return res.status(401).send({ error: info.messages ? info.messages : info.toString() }) //Si existe una propiedad messages en info, la envio sino envio pasado a String el objeto info
+                return res.status(401).json({ message: info.messages ? info.messages : info.toString() }) //Si existe una propiedad messages en info, la envio sino envio pasado a String el objeto info
                 // done(null, false, {
                 //     message: 'Uuario no encontrado'
                 // })
@@ -34,19 +34,17 @@ export const passportError = (strategy) => {
 export const authorization = (rol) => {
     return async (req, res, next) => {
         if (!req.user) { //No hay un usuario
-            return res.status(401).send({
-                error: "User no autorizado"
+            return res.status(401).json({
+                message: "Usuario no autorizado"
             })
         }
 //        console.log('req.user',req.user.rol ) //Acceso a las propiedades del user en JWT
 //        console.log('rol',rol) //Acceso a las propiedades del user en JWT
 
         if (rol.includes(req.user.rol)) {
-            console.log('encontro rol') //Acceso a las propiedades del user en JWT
-
         } else {
-            return res.status(403).send({
-                error: "User no tiene los permisos necesarios"
+            return res.status(403).json({
+                message: "Usuario no tiene los permisos necesarios"
             })
         }
         next()

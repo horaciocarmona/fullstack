@@ -22,3 +22,4 @@ error: Error en la coneccion a al base de datos CastError: Cast to ObjectId fail
 error: Error en la coneccion a al base de datos CastError: Cast to ObjectId failed for value "10" (type string) at path "_id" for model "users"
 error: Usuario de email carmona_horacio@hotmail.com no encontrado
 error: No se puede logear el usuario por User logged error: Error login user
+error: No se puede logear el usuario por User logged error: Error login user

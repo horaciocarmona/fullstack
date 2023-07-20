@@ -60,7 +60,7 @@ export const updateUserById = async (id,info) => {
 
 export const deleteUserById = async (id) => {
     try {
-      const mensaje = await userModel.findByIdAndRemove(
+        const mensaje = await userModel.findByIdAndRemove(
         new mongoose.Types.ObjectId(id)
       );
       return mensaje;

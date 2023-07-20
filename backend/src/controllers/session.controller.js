@@ -47,7 +47,6 @@ export const testLogin = async (req, res, next) => {
     };
     req.session.login = true;
     //    res.status(200).send({status:'success', payload:req.user})
-    console.log("req.user", req.user);
     res.redirect("/api/session/product");
   } catch (error) {
     return res.status(500).send({
@@ -138,7 +137,6 @@ export const registerUser = async (req, res, next) => {
       res.status(401).send("Usuario ya registrado");
     } else {
       const hashPassword = createHash(password);
-      console.log("rol",rol)
       const newUser = await createUser({
         first_name,
         last_name,

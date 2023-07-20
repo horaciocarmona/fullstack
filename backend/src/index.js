@@ -196,6 +196,7 @@ app.set("port", process.env.PORT || 8080);
 //Routers
 app.use(addLogger)
 app.use("/", express.static(__dirname + "/public"));
+console.log('dirname',(__dirname + "/public"));
 app.use("/", routerSocket);
 app.use("/", router);
 app.use(errorHandler)

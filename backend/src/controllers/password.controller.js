@@ -71,7 +71,6 @@ export const changePassword = async (req, res,next) => {
       `cambio de password  `
     )
     const { email,password,token } = req.body;
-    console.log(req.body)
     if (token){
       if (isTokenExpired(token)){
         req.logger.info( 
